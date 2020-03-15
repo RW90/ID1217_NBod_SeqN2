@@ -48,31 +48,26 @@ void calculateForces(int numBodies, double mass[], struct point pos[], struct po
             yDist = pos[i].y - pos[j].y;
             zDist = pos[i].z - pos[j].y;
             totDist = sqrt(xDist * xDist + yDist * yDist + zDist * zDist);
-            magnitude = G_CONST * mass[i] * mass[j] / (totDist * totDist);
-            force[i].x -= magnitude*xDist/totDist;
-            force[i].y -= magnitude*yDist/totDist;
-            force[i].z -= magnitude*zDist/totDist;
-            force[j].x += magnitude*xDist/totDist;
-            force[j].y += magnitude*yDist/totDist;
-            force[j].z += magnitude*zDist/totDist;
+            magnitude = G_CONST * mass[i] * mass[j] / (totDist * totDist * totDist);  // magnitude / totDist
+            force[i].x -= magnitude*xDist;
+            force[i].y -= magnitude*yDist;
+            force[i].z -= magnitude*zDist;
+            force[j].x += magnitude*xDist;
+            force[j].y += magnitude*yDist;
+            force[j].z += magnitude*zDist;
         }
     }
 }
 
 void moveBodies(int numBodies, double mass[], struct point pos[], struct point velocity[], struct point force[]){
-    double deltaVelX;
-    double deltaVelY;
-    double deltaVelZ;
-    double deltaPosX;
-    double deltaPosY;
-    double deltaPosZ;
+    double deltaVelX, deltaVelY, deltaVelZ, deltaPosX, deltaPosY, deltaPosZ;
     for(int i = 0; i < numBodies; i++){
         deltaVelX = force[i].x / mass[i] * DELTA_TIME;  // f / m * t or a * t
         deltaVelY = force[i].y / mass[i] * DELTA_TIME;
         deltaVelZ = force[i].z / mass[i] * DELTA_TIME;
-        deltaPosX = (velocity[i].x + deltaVelX / 2) * DELTA_TIME;   // (v * a*t/2) * t
-        deltaPosY = (velocity[i].y + deltaVelY / 2) * DELTA_TIME;
-        deltaPosZ = (velocity[i].z + deltaVelZ / 2) * DELTA_TIME;
+        deltaPosX = (velocity[i].x + deltaVelX * 0.5) * DELTA_TIME;   // (v * a*t/2) * t
+        deltaPosY = (velocity[i].y + deltaVelY * 0.5) * DELTA_TIME;
+        deltaPosZ = (velocity[i].z + deltaVelZ * 0.5) * DELTA_TIME;
         velocity[i].x += deltaVelX;
         velocity[i].y += deltaVelY;
         velocity[i].z += deltaVelZ;
