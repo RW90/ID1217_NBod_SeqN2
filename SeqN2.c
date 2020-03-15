@@ -20,6 +20,19 @@ struct point{
     double z;
 };
 
+double read_timer() {
+    static bool initialized = false;
+    static struct timeval start;
+    struct timeval end;
+    if( !initialized )
+    {
+        gettimeofday( &start, NULL );
+        initialized = true;
+    }
+    gettimeofday( &end, NULL );
+    return (end.tv_sec - start.tv_sec) + 1.0e-6 * (end.tv_usec - start.tv_usec);
+}
+
 double randInRange(double min, double max){
     double range = max - min;
     double randomVal = (double) rand() / ((double) RAND_MAX);
@@ -74,6 +87,7 @@ void moveBodies(int numBodies, double mass[], struct point pos[], struct point v
 
 int main(int argc, char *argv[]){
     int numBodies, numSteps;
+    double startTime, endTime;
     srand(time(0));
 
     numBodies = (argc > 1) ? atoi(argv[1]) : DEFAULT_NUM_BODIES;
@@ -108,6 +122,7 @@ int main(int argc, char *argv[]){
     }
 #endif
 
+    startTime = read_timer();
     for(int i = 0; i < numSteps; i++){
         calculateForces(numBodies, mass, pos, force);
         #ifdef DEBUG
@@ -119,6 +134,8 @@ int main(int argc, char *argv[]){
         #endif
         moveBodies(numBodies, mass, pos, velocity, force);   
     }
+    endTime = read_timer();
 
+    printf("The execution time is %g sec with %d bodies and %d time steps.\n", endTime - startTime, numBodies, numSteps);
     return 0;
 }
